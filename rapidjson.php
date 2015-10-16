@@ -18,14 +18,22 @@ $o = new obj();
 $json = file_get_contents("status.json");
 var_dump(strlen($json));
 
+$times = 1000;
+
+////////////////////////////////////////
+$r = new Rapidjson($json);
+foreach(json_decode($json, true) as $k => $v) {
+    var_dump($k);
+    var_dump($r[$k]);
+}
+exit;
+
+
 $start_time = microtime(true);
 $start_mem =  memory_get_usage(); // 36640
 
-for($i = 0; $i < 1; $i++) {
-    //new Rapidjson($json);
-//    $json = file_get_contents("status.json");
+for($i = 0; $i < $times; $i++) {
     $r = new Rapidjson($json);
-    //echo $r["has_unread"]."\n";
 }
 
 $end_time = microtime(true);
@@ -34,13 +42,13 @@ $end_mem =  memory_get_usage();
 echo "Rapidjson: " . ($end_time - $start_time)."\n";
 echo "Rapidjson: " . ($end_mem - $start_mem)."\n";
 
+
 /////////////////////////////////////
 
 $start_time = microtime(true);
 $start_mem =  memory_get_usage();
 
-for($i = 0; $i < 1; $i++) {
-//    $json = file_get_contents("status.json");
+for($i = 0; $i < $times; $i++) {
     $r = json_decode($json);
 }
 $end_time = microtime(true);
@@ -49,6 +57,5 @@ $end_mem =  memory_get_usage();
 echo "json_decode: " . ($end_time - $start_time)."\n";
 echo "json_decode: " . ($end_mem - $start_mem)."\n";
 
-//var_dump($r['a']);
 
 ?>

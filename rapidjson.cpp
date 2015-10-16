@@ -109,19 +109,13 @@ PHP_METHOD(rapidjson, __construct) /* {{{ */ {
 		return;
 	}
 
-    //printf("Original JSON:\n %s\n", json);
-
-    Document document;  // Default template parameter uses UTF8 and MemoryPoolAllocator.
-
-    // In-situ parsing, decode strings directly in the source string. Source must be string.
-    //char buffer[sizeof(json)];
-    //memcpy(buffer, json, sizeof(json));
-    if (document.ParseInsitu(json).HasParseError()) {
+    Document *document = new Document();
+    if (document->Parse(json).HasParseError()) {
 		printf("\nParsing error\n");
 		return;
 	}
 	self = getThis();
-	zdoc.value.ptr = &document;
+	zdoc.value.ptr = document;
 	zend_update_property(rapidjson_ce, self, ZEND_STRL("obj"), &zdoc);
 
 }
@@ -159,14 +153,25 @@ PHP_METHOD(rapidjson, offsetGet) /* {{{ */ {
 	obj = zend_read_property(rapidjson_ce, self, ZEND_STRL("obj"), 1, NULL);
 	Document *document;
     document = (Document *)obj->value.ptr;
-	
 	if (!document->HasMember(offset->value.str->val)) {
 		RETURN_NULL();
 		return;	
 	}
-	const char *val = (*document)[offset->value.str->val].GetString();
-	zend_string *ret = zend_string_init(val, strlen(val), 0);
-	RETURN_STR(zend_string_copy(ret));
+	const Value& val = (*document)[offset->value.str->val]; 
+	if (val.IsString()) {
+	
+		zend_string *ret = zend_string_init(val.GetString(), strlen(val.GetString()), 0);
+		RETURN_STR(zend_string_copy(ret));
+	}
+	if (val.IsInt() || val.IsUint() || val.IsInt64() || val.IsUint64()) {
+		RETURN_LONG(val.GetUint64());	
+	}
+	if (val.IsDouble()) {
+		RETURN_DOUBLE(val.GetDouble());
+	}
+	if (val.IsBool()) {
+		RETURN_BOOL(val.GetBool());	
+	}
 }
 /* }}} */
 
