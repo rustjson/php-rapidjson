@@ -13,6 +13,7 @@ if test "$PHP_RAPIDJSON" = "yes"; then
   dnl PHP_NEW_EXTENSION(rapidjson, rapidjson.cpp, $ext_shared)
     PHP_REQUIRE_CXX()
     PHP_SUBST(RAPIDJSON_SHARED_LIBADD)
+    PHP_ADD_INCLUDE(rapidjson/include)
     PHP_ADD_LIBRARY(stdc++, 1, RAPIDJSON_SHARED_LIBADD)
     PHP_NEW_EXTENSION(rapidjson, rapidjson.cpp, $ext_shared)
 fi
