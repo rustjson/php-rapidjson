@@ -1,21 +1,12 @@
 --TEST--
-Check for php-rapidjson presence
+Check for rapidjson get value
 --SKIPIF--
-<?php if (!extension_loaded("php-rapidjson")) print "skip"; ?>
+<?php if (!extension_loaded("rapidjson")) print "skip"; ?>
 --FILE--
-<?php 
-echo "php-rapidjson extension is available";
-/*
-	you can add regression tests for your extension here
-
-  the output of your test code has to be equal to the
-  text in the --EXPECT-- section below for the tests
-  to pass, differences between the output and the
-  expected text are interpreted as failure
-
-	see php7/README.TESTING for further information on
-  writing regression tests
-*/
+<?php
+$str = '{"author":"Jason Young"}';
+$obj = new Rapidjson($str);
+var_dump($obj['author']);
 ?>
 --EXPECT--
-php-rapidjson extension is available
+string(11) "Jason Young"

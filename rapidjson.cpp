@@ -12,7 +12,7 @@
   | obtain it through the world-wide-web, please send a note to          |
   | license@php.net so we can mail you a copy immediately.               |
   +----------------------------------------------------------------------+
-  | Author:                                                              |
+  | Author: Jason Young<red.wolf.s.husband@gmail.com                     |
   +----------------------------------------------------------------------+
 */
 
@@ -161,7 +161,7 @@ PHP_METHOD(rapidjson, offsetGet) /* {{{ */ {
 	if (val.IsString()) {
 	
 		zend_string *ret = zend_string_init(val.GetString(), strlen(val.GetString()), 0);
-		RETURN_STR(zend_string_copy(ret));
+		RETURN_STR(ret);
 	}
 	if (val.IsInt() || val.IsUint() || val.IsInt64() || val.IsUint64()) {
 		RETURN_LONG(val.GetUint64());	
