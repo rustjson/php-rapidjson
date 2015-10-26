@@ -155,7 +155,17 @@ PHP_METHOD(rapidjson, parse) /* {{{ */ {
 	}
 	self = getThis();	
 	
-	rapidjson_parse(self, json);	
+	//rapidjson_parse(self, json);	
+	zval	zdoc;
+	Document *document = new Document();
+
+	if (document->Parse(json).HasParseError()) {
+		//TODO Fatal error here;	
+		printf("Parse Error\n");
+		//return -1;
+	}
+	zdoc.value.ptr = document;
+	zend_update_property(rapidjson_ce, self, ZEND_STRL("obj"), &zdoc);
 }
 /** }}} */
 
