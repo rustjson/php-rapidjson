@@ -75,6 +75,9 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo__construct, 0, 0, 1)
 	ZEND_ARG_INFO(0, json)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo__destruct, 0, 0, 1)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO_EX(arginfo_offsetset, 0, 0, 2)
 ZEND_ARG_INFO(0, offset)
 ZEND_ARG_INFO(0, value)
@@ -98,26 +101,60 @@ const zend_function_entry rapidjson_functions[] = {
 };
 /* }}} */
 
+int inline rapidjson_parse(zval *self, char *json) /* {{{ */ {
+	zval	zdoc;
+	Document *document = new Document();
+
+	if (document->Parse(json).HasParseError()) {
+		//TODO Fatal error here;	
+		printf("Parse Error\n");
+		return -1;
+	}
+	if (document->HasMember("name")) {
+		printf("has nameeeeeeeeeeeee\n");
+	}
+	zdoc.value.ptr = document;
+	zend_update_property(rapidjson_ce, self, ZEND_STRL("obj"), &zdoc);
+	return 0;
+}
+/* }}} */
+
 PHP_METHOD(rapidjson, __construct) /* {{{ */ {
 	
-	int		len;
+	uint	len = 0;
 	char	*json;
 	zval 	*self;
-	zval	zdoc;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|s", &json, &len) == FAILURE) {
+		return;
+	}
+	
+	self = getThis();
+	
+	if (len > 0) {
+		rapidjson_parse(self, json);	
+	}
+}
+/** }}} */
+
+PHP_METHOD(rapidjson, parse) /* {{{ */ {
+	
+	uint	len = 0;
+	char	*json;
+	zval 	*self;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &json, &len) == FAILURE) {
 		return;
 	}
-
-    Document *document = new Document();
-    if (document->Parse(json).HasParseError()) {
-		printf("\nParsing error\n");
-		return;
-	}
+	
 	self = getThis();
-	zdoc.value.ptr = document;
-	zend_update_property(rapidjson_ce, self, ZEND_STRL("obj"), &zdoc);
+	
+	rapidjson_parse(self, json);	
+}
+/** }}} */
 
+PHP_METHOD(rapidjson, __destruct) /* {{{ */ {
+	printf("destructing\n");	
 }
 /** }}} */
 
@@ -153,14 +190,14 @@ PHP_METHOD(rapidjson, offsetGet) /* {{{ */ {
 	obj = zend_read_property(rapidjson_ce, self, ZEND_STRL("obj"), 1, NULL);
 	Document *document;
     document = (Document *)obj->value.ptr;
-	if (!document->HasMember(offset->value.str->val)) {
+	//if (!document->HasMember(offset->value.str->val)) {
+	if (!document->HasMember("name")) {
 		RETURN_NULL();
 		return;	
 	}
 	const Value& val = (*document)[offset->value.str->val]; 
-	if (val.IsString()) {
-	
-		zend_string *ret = zend_string_init(val.GetString(), strlen(val.GetString()), 0);
+	if ((val).IsString()) {
+		zend_string *ret = zend_string_init((val).GetString(), strlen((val).GetString()), 0);
 		RETURN_STR(ret);
 	}
 	if (val.IsInt() || val.IsUint() || val.IsInt64() || val.IsUint64()) {
@@ -171,6 +208,11 @@ PHP_METHOD(rapidjson, offsetGet) /* {{{ */ {
 	}
 	if (val.IsBool()) {
 		RETURN_BOOL(val.GetBool());	
+	}
+	if (val.IsObject()) {
+		zval zdoc;
+		//zdoc.value.ptr = val;
+		//RETURN_ZVAL(
 	}
 }
 /* }}} */
@@ -189,6 +231,8 @@ static zend_object *rapidjson_object_create(zend_class_entry *ce TSRMLS_DC)
 
 static const zend_function_entry rapidjson_methods[] = /* {{{ */ {
     PHP_ME(rapidjson, __construct, arginfo__construct, ZEND_ACC_PUBLIC)
+    PHP_ME(rapidjson, __destruct,  arginfo__destruct,  ZEND_ACC_PUBLIC)
+    PHP_ME(rapidjson, parse, arginfo__construct, ZEND_ACC_PUBLIC)
 
 	PHP_ME(rapidjson, offsetSet,       arginfo_offsetset,       ZEND_ACC_PUBLIC)
 	PHP_ME(rapidjson, offsetGet,       arginfo_offsetget,       ZEND_ACC_PUBLIC)

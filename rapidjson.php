@@ -1,11 +1,15 @@
 <?php
-$json = file_get_contents("status.json");
+$json = file_get_contents("test.json");
 echo('json.len = '.strlen($json)."\n");
 
 $times = 1000;
 
+$r = new Rapidjson($json);
+//$r->parse($json);
+var_dump($r['name']);
+var_dump($r['city']);
+exit;
 ////////////////////////////////////////
-
 
 $start_time = microtime(true);
 $start_mem =  memory_get_usage();
