@@ -35,7 +35,8 @@ extern "C" {
 #include "rapidjson/document.h"     // rapidjson's DOM-style API
 #include "rapidjson/prettywriter.h" // for stringify JSON
 #include <cstdio>
-
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/writer.h"
 using namespace rapidjson;
 using namespace std;
 
@@ -110,9 +111,6 @@ int inline rapidjson_parse(zval *self, char *json) /* {{{ */ {
 		printf("Parse Error\n");
 		return -1;
 	}
-	if (document->HasMember("name")) {
-		printf("has nameeeeeeeeeeeee\n");
-	}
 	zdoc.value.ptr = document;
 	zend_update_property(rapidjson_ce, self, ZEND_STRL("obj"), &zdoc);
 	return 0;
@@ -132,7 +130,16 @@ PHP_METHOD(rapidjson, __construct) /* {{{ */ {
 	self = getThis();
 	
 	if (len > 0) {
-		rapidjson_parse(self, json);	
+		zval	zdoc;
+		Document *document = new Document();
+
+		if (document->Parse(json).HasParseError()) {
+			//TODO Fatal error here;	
+			printf("Parse Error\n");
+		}
+		zdoc.value.ptr = document;
+		zend_update_property(rapidjson_ce, self, ZEND_STRL("obj"), &zdoc);
+		//rapidjson_parse(self, json);	
 	}
 }
 /** }}} */
@@ -146,8 +153,7 @@ PHP_METHOD(rapidjson, parse) /* {{{ */ {
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &json, &len) == FAILURE) {
 		return;
 	}
-	
-	self = getThis();
+	self = getThis();	
 	
 	rapidjson_parse(self, json);	
 }
@@ -174,9 +180,6 @@ PHP_METHOD(rapidjson, offsetSet) /* {{{ */ {
 
 PHP_METHOD(rapidjson, offsetGet) /* {{{ */ {
 
-	using namespace rapidjson;
-	using namespace std;
-
 	zval *offset = NULL;
 	zval *value = NULL;
 	zval *obj = NULL;
@@ -191,6 +194,12 @@ PHP_METHOD(rapidjson, offsetGet) /* {{{ */ {
 	Document *document;
     document = (Document *)obj->value.ptr;
 	//if (!document->HasMember(offset->value.str->val)) {
+	
+	//StringBuffer buf;
+	//Writer<StringBuffer> writer(buf);
+	//document->Accept(writer);
+	//printf("%s\n", buf.GetString());
+
 	if (!document->HasMember("name")) {
 		RETURN_NULL();
 		return;	
