@@ -103,7 +103,7 @@ const zend_function_entry rapidjson_functions[] = {
 /* }}} */
 
 int inline rapidjson_parse(zval *self, char *json) /* {{{ */ {
-	zval	zdoc;
+	zval	zdoc = {{0}};
 	Document *document = new Document();
 
 	if (document->Parse(json).HasParseError()) {
@@ -111,8 +111,10 @@ int inline rapidjson_parse(zval *self, char *json) /* {{{ */ {
 		printf("Parse Error\n");
 		return -1;
 	}
-	zdoc.value.ptr = document;
+	ZVAL_PTR(&zdoc, document);
+//	zdoc.value.ptr = document;
 	zend_update_property(rapidjson_ce, self, ZEND_STRL("obj"), &zdoc);
+	zval_ptr_dtor(&zdoc);
 	return 0;
 }
 /* }}} */
@@ -130,16 +132,7 @@ PHP_METHOD(rapidjson, __construct) /* {{{ */ {
 	self = getThis();
 	
 	if (len > 0) {
-		zval	zdoc;
-		Document *document = new Document();
-
-		if (document->Parse(json).HasParseError()) {
-			//TODO Fatal error here;	
-			printf("Parse Error\n");
-		}
-		zdoc.value.ptr = document;
-		zend_update_property(rapidjson_ce, self, ZEND_STRL("obj"), &zdoc);
-		//rapidjson_parse(self, json);	
+		rapidjson_parse(self, json);	
 	}
 }
 /** }}} */
@@ -155,17 +148,7 @@ PHP_METHOD(rapidjson, parse) /* {{{ */ {
 	}
 	self = getThis();	
 	
-	//rapidjson_parse(self, json);	
-	zval	zdoc;
-	Document *document = new Document();
-
-	if (document->Parse(json).HasParseError()) {
-		//TODO Fatal error here;	
-		printf("Parse Error\n");
-		//return -1;
-	}
-	zdoc.value.ptr = document;
-	zend_update_property(rapidjson_ce, self, ZEND_STRL("obj"), &zdoc);
+	rapidjson_parse(self, json);	
 }
 /** }}} */
 
@@ -203,12 +186,6 @@ PHP_METHOD(rapidjson, offsetGet) /* {{{ */ {
 	obj = zend_read_property(rapidjson_ce, self, ZEND_STRL("obj"), 1, NULL);
 	Document *document;
     document = (Document *)obj->value.ptr;
-	//if (!document->HasMember(offset->value.str->val)) {
-	
-	//StringBuffer buf;
-	//Writer<StringBuffer> writer(buf);
-	//document->Accept(writer);
-	//printf("%s\n", buf.GetString());
 
 	if (!document->HasMember("name")) {
 		RETURN_NULL();
