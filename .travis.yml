@@ -7,4 +7,4 @@ before_script:
     - phpize && ./configure && make
 
 script:
-    - make test
+    - ./travis/run-test.sh
