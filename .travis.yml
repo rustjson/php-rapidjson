@@ -3,6 +3,9 @@ language: php
 php:
   - 7.0
 
+notifications:
+  email: false
+
 before_script:
     - phpize && ./configure && make
 

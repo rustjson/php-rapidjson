@@ -3,7 +3,7 @@ $json = file_get_contents("test.json");
 echo('json.len = '.strlen($json)."\n");
 
 $times = 1000;
-
+var_dump($json);
 //$r = new Rapidjson();
 $r = new Rapidjson($json);
 //$r->parse($json);

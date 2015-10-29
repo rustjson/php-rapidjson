@@ -1,4 +1,7 @@
 # php-rapidjson
+
+[![Build Status](https://travis-ci.org/RustJason/php-rapidjson.png?branch=master)](https://travis-ci.org/RustJason/php-rapidjson)
+
 PHP Extension of rapidjson
 
 #Result of benchmark(gcc -O3) [Script](https://github.com/RustJason/php-rapidjson/blob/master/rapidjson.php):

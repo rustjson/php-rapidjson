@@ -122,8 +122,8 @@ int inline rapidjson_parse(zval *self, char *json) /* {{{ */ {
 PHP_METHOD(rapidjson, __construct) /* {{{ */ {
 	
 	uint	len = 0;
-	char	*json;
-	zval 	*self;
+	char	*json = NULL;
+	zval 	*self = NULL;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|s", &json, &len) == FAILURE) {
 		return;
@@ -140,8 +140,8 @@ PHP_METHOD(rapidjson, __construct) /* {{{ */ {
 PHP_METHOD(rapidjson, parse) /* {{{ */ {
 	
 	uint	len = 0;
-	char	*json;
-	zval 	*self;
+	char	*json = NULL;
+	zval 	*self = NULL;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &json, &len) == FAILURE) {
 		return;
@@ -187,7 +187,7 @@ PHP_METHOD(rapidjson, offsetGet) /* {{{ */ {
 	Document *document;
     document = (Document *)obj->value.ptr;
 
-	if (!document->HasMember("name")) {
+	if (!document->HasMember(offset->value.str->val)) {
 		RETURN_NULL();
 		return;	
 	}
