@@ -153,7 +153,7 @@ PHP_METHOD(rapidjson, parse) /* {{{ */ {
 /** }}} */
 
 PHP_METHOD(rapidjson, __destruct) /* {{{ */ {
-	printf("destructing\n");	
+	//printf("destructing\n");	
 }
 /** }}} */
 
