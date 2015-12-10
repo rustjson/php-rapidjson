@@ -121,34 +121,32 @@ int inline rapidjson_parse(zval *self, char *json) /* {{{ */ {
 
 PHP_METHOD(rapidjson, __construct) /* {{{ */ {
 	
-	uint	len = 0;
-	char	*json = NULL;
-	zval 	*self = NULL;
+	zend_string *json = NULL;
+	zval 		*self = NULL;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|s", &json, &len) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|S", &json) == FAILURE) {
 		return;
 	}
 	
 	self = getThis();
 	
-	if (len > 0) {
-		rapidjson_parse(self, json);	
+	if (json != NULL && json->len > 0) {
+		rapidjson_parse(self, json->val);	
 	}
 }
 /** }}} */
 
 PHP_METHOD(rapidjson, parse) /* {{{ */ {
 	
-	uint	len = 0;
-	char	*json = NULL;
-	zval 	*self = NULL;
+	zend_string	*json = NULL;
+	zval 		*self = NULL;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &json, &len) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &json) == FAILURE) {
 		return;
 	}
 	self = getThis();	
 	
-	rapidjson_parse(self, json);	
+	rapidjson_parse(self, json->val);	
 }
 /** }}} */
 
