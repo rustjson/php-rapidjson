@@ -73,7 +73,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo__construct, 0, 0, 1)
 	ZEND_ARG_INFO(0, json)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo__destruct, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo__void, 0, 0, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_offsetset, 0, 0, 2)
@@ -230,19 +230,46 @@ PHP_METHOD(rapidjson, offsetUnset) /* {{{ */ {
 }
 /* }}} */
 
+PHP_METHOD(rapidjson, current) /* {{{ */ {
+}
+/* }}} */
+
+PHP_METHOD(rapidjson, key) /* {{{ */ {
+}
+/* }}} */
+
+PHP_METHOD(rapidjson, next) /* {{{ */ {
+}
+/* }}} */
+
+PHP_METHOD(rapidjson, rewind) /* {{{ */ {
+}
+/* }}} */
+
+PHP_METHOD(rapidjson, valid) /* {{{ */ {
+}
+/* }}} */
+
 static zend_object *rapidjson_object_create(zend_class_entry *ce TSRMLS_DC)
 {
 }
 
 static const zend_function_entry rapidjson_methods[] = /* {{{ */ {
     PHP_ME(rapidjson, __construct, arginfo__construct, ZEND_ACC_PUBLIC)
-    PHP_ME(rapidjson, __destruct,  arginfo__destruct,  ZEND_ACC_PUBLIC)
-    PHP_ME(rapidjson, parse, arginfo__construct, ZEND_ACC_PUBLIC)
+    PHP_ME(rapidjson, __destruct,  arginfo__void,  ZEND_ACC_PUBLIC)
+    
+	PHP_ME(rapidjson, parse, arginfo__construct, ZEND_ACC_PUBLIC)
 
 	PHP_ME(rapidjson, offsetSet,       arginfo_offsetset,       ZEND_ACC_PUBLIC)
 	PHP_ME(rapidjson, offsetGet,       arginfo_offsetget,       ZEND_ACC_PUBLIC)
 	PHP_ME(rapidjson, offsetExists,    arginfo_offsetexists,    ZEND_ACC_PUBLIC)
 	PHP_ME(rapidjson, offsetUnset,     arginfo_offsetunset,     ZEND_ACC_PUBLIC)
+	
+    PHP_ME(rapidjson, current,  arginfo__void,  ZEND_ACC_PUBLIC)
+    PHP_ME(rapidjson, key, 		arginfo__void,  ZEND_ACC_PUBLIC)
+    PHP_ME(rapidjson, next,  	arginfo__void,  ZEND_ACC_PUBLIC)
+    PHP_ME(rapidjson, rewind,  	arginfo__void,  ZEND_ACC_PUBLIC)
+    PHP_ME(rapidjson, valid,  	arginfo__void,  ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
 /* }}} */
@@ -261,6 +288,7 @@ PHP_MINIT_FUNCTION(rapidjson)
     
 	rapidjson_ce = zend_register_internal_class(&ce TSRMLS_CC);
 	zend_class_implements(rapidjson_ce TSRMLS_CC, 1, zend_ce_arrayaccess);
+	zend_class_implements(rapidjson_ce TSRMLS_CC, 1, zend_ce_iterator);
    	
    	zend_declare_property_null(rapidjson_ce, ZEND_STRL("obj"), 	ZEND_ACC_PROTECTED TSRMLS_CC);
 

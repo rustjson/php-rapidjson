@@ -1,4 +1,40 @@
 <?php
+
+class PHPRapidjson implements ArrayAccess, Iterator {
+	public function offsetExists($o) {
+	}
+
+	public function offsetGet($o) {
+
+	}
+	
+	public function offsetSet($o, $v) {
+
+	}
+	
+	public function offsetUnset($o) {
+
+	}
+
+	public function current() {
+	}
+
+	public function key() {
+	}
+
+	public function next() {
+
+	}
+
+	public function rewind() {
+
+	}
+
+	public function valid() {
+	}
+}
+new PHPRapidjson();
+
 	try {
 		$a = json_decode('{"a":0}');
 		var_dump($a);
@@ -12,7 +48,7 @@ echo('json.len = '.strlen($json)."\n");
 $times = 1000;
 var_dump($json);
 //$r = new Rapidjson();
-$json = '{"city":"beijing", "name":"Jason", "age": 23, "ageStr":"23"}';
+$json = '{"city":"beijing", "name":"Jason", "age": 23, "ageStr":"23", "interest": ["computer", 59]}';
 $r = new Rapidjson();
 $r->parse($json);
 $r["name"] = "OK";
@@ -20,6 +56,9 @@ var_dump($r['name']);
 var_dump($r['city']);
 var_dump($r['age']);
 var_dump($r['ageStr']);
+var_dump($r['interest']);
+$r["interest"] = 'a';
+var_dump($r['interest']);
 exit;
 ////////////////////////////////////////
 
