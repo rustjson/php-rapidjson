@@ -1,15 +1,25 @@
 <?php
+	try {
+		$a = json_decode('{"a":0}');
+		var_dump($a);
+	} catch(exception $e) {
+		var_dump($e);
+	}
+
 $json = file_get_contents("test.json");
 echo('json.len = '.strlen($json)."\n");
 
 $times = 1000;
 var_dump($json);
 //$r = new Rapidjson();
-$json = '{"a":"b"}';
+$json = '{"city":"beijing", "name":"Jason", "age": 23, "ageStr":"23"}';
 $r = new Rapidjson();
 $r->parse($json);
+$r["name"] = "OK";
 var_dump($r['name']);
 var_dump($r['city']);
+var_dump($r['age']);
+var_dump($r['ageStr']);
 exit;
 ////////////////////////////////////////
 

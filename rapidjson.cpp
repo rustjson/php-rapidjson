@@ -51,13 +51,10 @@ static int le_rapidjson;
 zend_class_entry *rapidjson_ce;
 
 /* {{{ PHP_INI
- */
-/* Remove comments and fill if you need to have entries in php.ini
 PHP_INI_BEGIN()
     STD_PHP_INI_ENTRY("rapidjson.global_value",      "42", PHP_INI_ALL, OnUpdateLong, global_value, zend_rapidjson_globals, rapidjson_globals)
     STD_PHP_INI_ENTRY("rapidjson.global_string", "foobar", PHP_INI_ALL, OnUpdateString, global_string, zend_rapidjson_globals, rapidjson_globals)
 PHP_INI_END()
-*/
 /* }}} */
 
 
@@ -112,7 +109,6 @@ int inline rapidjson_parse(zval *self, char *json) /* {{{ */ {
 		return -1;
 	}
 	ZVAL_PTR(&zdoc, document);
-//	zdoc.value.ptr = document;
 	zend_update_property(rapidjson_ce, self, ZEND_STRL("obj"), &zdoc);
 	zval_ptr_dtor(&zdoc);
 	return 0;
@@ -156,26 +152,41 @@ PHP_METHOD(rapidjson, __destruct) /* {{{ */ {
 /** }}} */
 
 PHP_METHOD(rapidjson, offsetSet) /* {{{ */ {
-    // 3. Modify values in document.
+	zend_string *key = NULL;
+	zval 		*value = NULL;
+	zval 		*obj = NULL;
 
-    // Change i to a bigger number
-   /* {
-        uint64_t f20 = 1;   // compute factorial of 20
-        for (uint64_t j = 1; j <= 20; j++)
-            f20 *= j;
-        document["i"] = f20;    // Alternate form: document["i"].SetUint64(f20)
-        assert(!document["i"].IsInt()); // No longer can be cast as int or uint.
-    }*/
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "Sz", &key, &value) == FAILURE) {
+		return;
+	}
+	
+	zval *self = getThis();
+
+	obj = zend_read_property(rapidjson_ce, self, ZEND_STRL("obj"), 1, NULL);
+	Document *document;
+    document = (Document *)obj->value.ptr;
+	
+	if (!document->HasMember(key->val)) {
+		RETURN_NULL();
+		return;	
+	}
+	Value& val = (*document)[key->val]; 
+	
+	if (IS_STRING == Z_TYPE_P(value)) {
+		val.SetString(StringRef(Z_STRVAL_P(value), Z_STRLEN_P(value)));
+	} else if (IS_LONG == Z_TYPE_P(value)) {
+		val.SetInt64(Z_LVAL_P(value));
+	}
 }
 /* }}} */
 
 PHP_METHOD(rapidjson, offsetGet) /* {{{ */ {
 
-	zval *offset = NULL;
-	zval *value = NULL;
-	zval *obj = NULL;
+	zend_string *key = NULL;
+	zval 		*value = NULL;
+	zval 		*obj = NULL;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &offset) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &key) == FAILURE) {
 		return;
 	}
 	
@@ -185,12 +196,12 @@ PHP_METHOD(rapidjson, offsetGet) /* {{{ */ {
 	Document *document;
     document = (Document *)obj->value.ptr;
 
-	if (!document->HasMember(offset->value.str->val)) {
+	if (!document->HasMember(key->val)) {
 		RETURN_NULL();
 		return;	
 	}
-	const Value& val = (*document)[offset->value.str->val]; 
-	if ((val).IsString()) {
+	const Value& val = (*document)[key->val]; 
+	if (val.IsString()) {
 		zend_string *ret = zend_string_init((val).GetString(), strlen((val).GetString()), 0);
 		RETURN_STR(ret);
 	}
@@ -293,6 +304,7 @@ PHP_MINFO_FUNCTION(rapidjson)
 {
 	php_info_print_table_start();
 	php_info_print_table_header(2, "rapidjson support", "enabled");
+	php_info_print_table_header(2, "rapidjson version", RAPIDJSON_VERSION_STRING);
 	php_info_print_table_end();
 
 	/* Remove comments if you have entries in php.ini
