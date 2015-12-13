@@ -1,5 +1,5 @@
 --TEST--
-Check for rapidjson set value
+Check for rapidjson traversal value
 --SKIPIF--
 <?php if (!extension_loaded("rapidjson")) print "skip"; ?>
 --FILE--

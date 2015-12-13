@@ -1,5 +1,5 @@
 --TEST--
-Check for rapidjson get value
+Check for rapidjson get value and toString
 --SKIPIF--
 <?php if (!extension_loaded("rapidjson")) print "skip"; ?>
 --FILE--
