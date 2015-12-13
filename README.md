@@ -2,13 +2,13 @@
 
 [![Build Status](https://travis-ci.org/RustJason/php-rapidjson.png?branch=master)](https://travis-ci.org/RustJason/php-rapidjson)
 
-PHP Extension of rapidjson
+PHP Extension of rapidjson (not finished yet)
 
 # Requirement
 
-## PHP7
+ PHP7
 
-# install
+# Install
 
 ```sh
 git clone https://github.com/RustJason/php-rapidjson
@@ -23,6 +23,32 @@ phpize
 make && make test
 
 ```
+
+# Usage
+
+```php
+
+$json = '{"name": "Jason", "age": 23, "arr":["c", "e"], "obj":{"subobj"}}';
+
+$obj = new Rapidjson($json);
+
+//traversal
+foreach($obj as $k => $v) {
+	echo "key = $k";
+	var_dump($v);
+}
+
+//modify and reencode
+$obj['name'] = 'Young';
+var_dump($obj['name']);
+echo $obj;
+
+
+//ongoing 
+//Array support and obj support
+
+
+
 
 #Result of benchmark(gcc -O3) [Script](https://github.com/RustJason/php-rapidjson/blob/master/benchmark.php):
 ```bash
