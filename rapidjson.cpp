@@ -146,6 +146,24 @@ PHP_METHOD(rapidjson, parse) /* {{{ */ {
 }
 /** }}} */
 
+PHP_METHOD(rapidjson, __toString) /* {{{ */ {
+
+	zval *self 	= getThis();
+	zval *obj 	= NULL;
+
+	obj = zend_read_property(rapidjson_ce, self, ZEND_STRL("obj"), 1, NULL);
+	Document *document = (Document *)obj->value.ptr;
+    
+	StringBuffer sb;
+    PrettyWriter<StringBuffer> writer(sb);
+    document->Accept(writer);    // Accept() traverses the DOM and generates Handler events.
+    //puts(sb.GetString());
+	
+	zend_string *ret = zend_string_init(sb.GetString(), strlen(sb.GetString()), 0);
+	RETURN_STR(ret);
+}
+/* }}} */
+
 PHP_METHOD(rapidjson, __destruct) /* {{{ */ {
 	//printf("destructing\n");	
 }
@@ -176,6 +194,8 @@ PHP_METHOD(rapidjson, offsetSet) /* {{{ */ {
 		val.SetString(StringRef(Z_STRVAL_P(value), Z_STRLEN_P(value)));
 	} else if (IS_LONG == Z_TYPE_P(value)) {
 		val.SetInt64(Z_LVAL_P(value));
+	} else if (IS_NULL == Z_TYPE_P(value)) {
+		val.SetNull();
 	}
 }
 /* }}} */
@@ -223,10 +243,43 @@ PHP_METHOD(rapidjson, offsetGet) /* {{{ */ {
 /* }}} */
 
 PHP_METHOD(rapidjson, offsetExists) /* {{{ */ {
+
+	zend_string *key = NULL;
+	zval 		*value = NULL;
+	zval 		*obj = NULL;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &key) == FAILURE) {
+		return;
+	}
+	zval *self = getThis();
+
+	obj = zend_read_property(rapidjson_ce, self, ZEND_STRL("obj"), 1, NULL);
+	Document *document;
+    document = (Document *)obj->value.ptr;
+	
+	if (!document->HasMember(key->val)) {
+		RETURN_BOOL(false);	
+	} else {
+		RETURN_BOOL(true);
+	}
 }
 /* }}} */
 
 PHP_METHOD(rapidjson, offsetUnset) /* {{{ */ {
+	
+	zend_string *key = NULL;
+	zval 		*value = NULL;
+	zval 		*obj = NULL;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &key) == FAILURE) {
+		return;
+	}
+	zval *self = getThis();
+
+	obj = zend_read_property(rapidjson_ce, self, ZEND_STRL("obj"), 1, NULL);
+	Document *document;
+    document = (Document *)obj->value.ptr;
+	document->RemoveMember(key->val);
 }
 /* }}} */
 
@@ -257,6 +310,7 @@ static zend_object *rapidjson_object_create(zend_class_entry *ce TSRMLS_DC)
 static const zend_function_entry rapidjson_methods[] = /* {{{ */ {
     PHP_ME(rapidjson, __construct, arginfo__construct, ZEND_ACC_PUBLIC)
     PHP_ME(rapidjson, __destruct,  arginfo__void,  ZEND_ACC_PUBLIC)
+	PHP_ME(rapidjson, __toString,  arginfo__void, ZEND_ACC_PUBLIC)
     
 	PHP_ME(rapidjson, parse, arginfo__construct, ZEND_ACC_PUBLIC)
 

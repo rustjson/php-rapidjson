@@ -6,7 +6,10 @@ Check for rapidjson get value
 <?php
 $str = '{"author":"Jason Young"}';
 $obj = new Rapidjson($str);
+echo $obj;
 var_dump($obj['author']);
 ?>
 --EXPECT--
-string(11) "Jason Young"
+{
+    "author": "Jason Young"
+}string(11) "Jason Young"

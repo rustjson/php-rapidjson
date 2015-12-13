@@ -59,6 +59,13 @@ var_dump($r['ageStr']);
 var_dump($r['interest']);
 $r["interest"] = 'a';
 var_dump($r['interest']);
+
+$r["interest"] = null;
+echo $r;
+
+unset($r["interest"]);
+echo $r;
+
 exit;
 ////////////////////////////////////////
 
