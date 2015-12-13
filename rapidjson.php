@@ -45,10 +45,10 @@ new PHPRapidjson();
 $json = file_get_contents("test.json");
 echo('json.len = '.strlen($json)."\n");
 
-$times = 1000;
-var_dump($json);
-//$r = new Rapidjson();
-$json = '{"city":"beijing", "name":"Jason", "age": 23, "ageStr":"23", "interest": ["computer", 59]}';
+
+$json = '{"boy": true, "name":"hello", "city": "beijing", "int":0, "arr":[1,3], "obj":{"ab":"cd"}}';
+
+
 $r = new Rapidjson();
 $r->parse($json);
 $r["name"] = "OK";
@@ -61,14 +61,19 @@ $r["interest"] = 'a';
 var_dump($r['interest']);
 
 $r["interest"] = null;
-echo $r;
+//echo $r;
 
 unset($r["interest"]);
-echo $r;
+//echo $r;
+
+foreach ($r as $k => $v) {
+	echo 'key = '. $k .', val = ';var_dump($v);
+}
 
 exit;
 ////////////////////////////////////////
 
+$times = 1000;
 $start_time = microtime(true);
 $start_mem =  memory_get_usage();
 

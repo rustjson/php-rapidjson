@@ -40,8 +40,6 @@ extern "C" {
 using namespace rapidjson;
 using namespace std;
 
-
-
 /* If you declare any globals in php_rapidjson.h uncomment this:
 ZEND_DECLARE_MODULE_GLOBALS(rapidjson)
 */
@@ -56,7 +54,6 @@ PHP_INI_BEGIN()
     STD_PHP_INI_ENTRY("rapidjson.global_string", "foobar", PHP_INI_ALL, OnUpdateString, global_string, zend_rapidjson_globals, rapidjson_globals)
 PHP_INI_END()
 /* }}} */
-
 
 /* {{{ php_rapidjson_init_globals
  */
@@ -103,13 +100,17 @@ int inline rapidjson_parse(zval *self, char *json) /* {{{ */ {
 	zval	zdoc = {{0}};
 	Document *document = new Document();
 
+
 	if (document->Parse(json).HasParseError()) {
 		//TODO Fatal error here;	
 		printf("Parse Error\n");
 		return -1;
 	}
+
 	ZVAL_PTR(&zdoc, document);
+
 	zend_update_property(rapidjson_ce, self, ZEND_STRL("obj"), &zdoc);
+	
 	zval_ptr_dtor(&zdoc);
 	return 0;
 }
@@ -258,9 +259,9 @@ PHP_METHOD(rapidjson, offsetExists) /* {{{ */ {
     document = (Document *)obj->value.ptr;
 	
 	if (!document->HasMember(key->val)) {
-		RETURN_BOOL(false);	
+		RETURN_FALSE;	
 	} else {
-		RETURN_BOOL(true);
+		RETURN_TRUE;
 	}
 }
 /* }}} */
@@ -284,22 +285,82 @@ PHP_METHOD(rapidjson, offsetUnset) /* {{{ */ {
 /* }}} */
 
 PHP_METHOD(rapidjson, current) /* {{{ */ {
+
+	zval *self = getThis();
+
+	zval *obj = zend_read_property(rapidjson_ce, self, ZEND_STRL("obj"), 1, NULL);
+	zval *ost = zend_read_property(rapidjson_ce, self, ZEND_STRL("ost"), 1, NULL);
+	
+	Document *document = (Document *)obj->value.ptr;
+	
+	Value::ConstMemberIterator itr = document->MemberBegin();
+	itr += ost->value.lval;
+	
+    //static const char* typeNames[] = { "Null", "False", "True", "Object", "Array", "String", "Number" };
+	if (itr->value.GetType() == 5) {
+
+		zend_string *ret = zend_string_init(itr->value.GetString(), strlen(itr->value.GetString()), 0);
+		RETURN_STR(ret);
+	} else if (itr->value.GetType() == 6) {
+		RETURN_LONG(itr->value.GetUint64());	
+	} else if (itr->value.GetType() == 1) {
+		RETURN_FALSE;
+	} else if (itr->value.GetType() == 2) {
+		RETURN_TRUE;
+	} else if (itr->value.GetType() == 0) {
+		RETURN_NULL();
+	}
 }
 /* }}} */
 
 PHP_METHOD(rapidjson, key) /* {{{ */ {
+	zval *self = getThis();
+
+	zval *obj = zend_read_property(rapidjson_ce, self, ZEND_STRL("obj"), 1, NULL);
+	zval *ost = zend_read_property(rapidjson_ce, self, ZEND_STRL("ost"), 1, NULL);
+	
+	Document *document;
+    document = (Document *)obj->value.ptr;
+	
+    
+	Value::ConstMemberIterator itr = document->MemberBegin();
+	itr += ost->value.lval;
+	zend_string *ret = zend_string_init(itr->name.GetString(), strlen(itr->name.GetString()), 0);
+	RETURN_STR(ret);
 }
 /* }}} */
 
 PHP_METHOD(rapidjson, next) /* {{{ */ {
+	zval *self = getThis();
+
+	zval *ost = zend_read_property(rapidjson_ce, self, ZEND_STRL("ost"), 1, NULL);
+	ost->value.lval++;	
 }
 /* }}} */
 
 PHP_METHOD(rapidjson, rewind) /* {{{ */ {
+	zval *self = getThis();
+
+	zval *ost = zend_read_property(rapidjson_ce, self, ZEND_STRL("ost"), 1, NULL);
+	ost->value.lval = 0;	
 }
 /* }}} */
 
 PHP_METHOD(rapidjson, valid) /* {{{ */ {
+	zval *self = getThis();
+
+	zval *obj = zend_read_property(rapidjson_ce, self, ZEND_STRL("obj"), 1, NULL);
+	zval *ost = zend_read_property(rapidjson_ce, self, ZEND_STRL("ost"), 1, NULL);
+	
+	Document *document = (Document *)obj->value.ptr;
+    
+	Value::ConstMemberIterator itr = document->MemberBegin();
+	itr += ost->value.lval;
+	if (itr != document->MemberEnd()) {
+		RETURN_TRUE;	
+	} else {
+		RETURN_FALSE;
+	}
 }
 /* }}} */
 
@@ -344,7 +405,8 @@ PHP_MINIT_FUNCTION(rapidjson)
 	zend_class_implements(rapidjson_ce TSRMLS_CC, 1, zend_ce_arrayaccess);
 	zend_class_implements(rapidjson_ce TSRMLS_CC, 1, zend_ce_iterator);
    	
-   	zend_declare_property_null(rapidjson_ce, ZEND_STRL("obj"), 	ZEND_ACC_PROTECTED TSRMLS_CC);
+   	zend_declare_property_null(rapidjson_ce, ZEND_STRL("obj"), 	  ZEND_ACC_PROTECTED TSRMLS_CC);
+   	zend_declare_property_long(rapidjson_ce, ZEND_STRL("ost"), 0, ZEND_ACC_PROTECTED TSRMLS_CC);
 
 	return SUCCESS;	
 }
