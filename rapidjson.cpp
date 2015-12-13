@@ -183,16 +183,16 @@ PHP_METHOD(rapidjson, offsetSet) /* {{{ */ {
 
 	obj = zend_read_property(rapidjson_ce, self, ZEND_STRL("obj"), 1, NULL);
 	Document *document;
-    document = (Document *)obj->value.ptr;
+	document = (Document *)obj->value.ptr;
 	
 	if (!document->HasMember(key->val)) {
 		RETURN_NULL();
 		return;	
 	}
-	Value& val = (*document)[key->val]; 
-	
+	Value& val = (*document)[key->val];
+
 	if (IS_STRING == Z_TYPE_P(value)) {
-		val.SetString(StringRef(Z_STRVAL_P(value), Z_STRLEN_P(value)));
+		val.SetString(Z_STRVAL_P(value), Z_STRLEN_P(value));
 	} else if (IS_LONG == Z_TYPE_P(value)) {
 		val.SetInt64(Z_LVAL_P(value));
 	} else if (IS_NULL == Z_TYPE_P(value)) {

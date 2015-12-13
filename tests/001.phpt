@@ -7,9 +7,9 @@ Check for rapidjson get value and toString
 $str = '{"author":"Jason Young"}';
 $obj = new Rapidjson($str);
 echo $obj;
+echo "\n";
 var_dump($obj['author']);
 ?>
 --EXPECT--
-{
-    "author": "Jason Young"
-}string(11) "Jason Young"
+{"author":"Jason Young"}
+string(11) "Jason Young"
