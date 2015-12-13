@@ -4,6 +4,26 @@
 
 PHP Extension of rapidjson
 
+# Requirement
+
+## PHP7
+
+# install
+
+```sh
+git clone https://github.com/RustJason/php-rapidjson
+cd php-rapidjson
+
+git submodule init
+
+phpize
+
+./configure --with-php-config=/usr/local/php/php-7.0.0/bin/php-config
+
+make && make test
+
+```
+
 #Result of benchmark(gcc -O3) [Script](https://github.com/RustJason/php-rapidjson/blob/master/benchmark.php):
 ```bash
 json.len = 206082
