@@ -11,6 +11,4 @@ echo $obj;
 ?>
 --EXPECT--
 string(11) "Jason Young"
-{
-    "author": "Jason Young"
-}
+{"author":"Jason Young"}
