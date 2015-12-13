@@ -4,13 +4,17 @@
 
 PHP Extension of rapidjson
 
-#Result of benchmark(gcc -O3) [Script](https://github.com/RustJason/php-rapidjson/blob/master/rapidjson.php):
+#Result of benchmark(gcc -O3) [Script](https://github.com/RustJason/php-rapidjson/blob/master/benchmark.php):
 ```bash
-json.len = 253438
-Rapidjson.time: 1.4133679866791
-Rapidjson.mem: 96
-json_decode.time: 9.0703821182251
-json_decode.mem: 1530672
+json.len = 206082
+string(6) "memeda"
+newjson.len = 202313
+Rapidjson.time: 2.2114210128784
+Rapidjson.mem: 204912
+string(6) "memeda"
+newjson.len = 218756
+json_decode.time: 15.593321800232
+json_decode.mem: 1543856
 ```
 
 

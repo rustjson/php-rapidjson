@@ -156,7 +156,7 @@ PHP_METHOD(rapidjson, __toString) /* {{{ */ {
 	Document *document = (Document *)obj->value.ptr;
     
 	StringBuffer sb;
-    PrettyWriter<StringBuffer> writer(sb);
+    Writer<StringBuffer> writer(sb);
     document->Accept(writer);    // Accept() traverses the DOM and generates Handler events.
     //puts(sb.GetString());
 	
@@ -204,7 +204,6 @@ PHP_METHOD(rapidjson, offsetSet) /* {{{ */ {
 PHP_METHOD(rapidjson, offsetGet) /* {{{ */ {
 
 	zend_string *key = NULL;
-	zval 		*value = NULL;
 	zval 		*obj = NULL;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &key) == FAILURE) {
@@ -246,7 +245,6 @@ PHP_METHOD(rapidjson, offsetGet) /* {{{ */ {
 PHP_METHOD(rapidjson, offsetExists) /* {{{ */ {
 
 	zend_string *key = NULL;
-	zval 		*value = NULL;
 	zval 		*obj = NULL;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &key) == FAILURE) {
@@ -269,7 +267,6 @@ PHP_METHOD(rapidjson, offsetExists) /* {{{ */ {
 PHP_METHOD(rapidjson, offsetUnset) /* {{{ */ {
 	
 	zend_string *key = NULL;
-	zval 		*value = NULL;
 	zval 		*obj = NULL;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &key) == FAILURE) {
@@ -321,7 +318,6 @@ PHP_METHOD(rapidjson, key) /* {{{ */ {
 	
 	Document *document;
     document = (Document *)obj->value.ptr;
-	
     
 	Value::ConstMemberIterator itr = document->MemberBegin();
 	itr += ost->value.lval;
