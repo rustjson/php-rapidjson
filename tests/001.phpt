@@ -10,6 +10,4 @@ echo $obj;
 var_dump($obj['author']);
 ?>
 --EXPECT--
-{
-    "author": "Jason Young"
-}string(11) "Jason Young"
+{"author":"Jason Young"}string(11) "Jason Young"
