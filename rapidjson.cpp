@@ -192,7 +192,9 @@ PHP_METHOD(rapidjson, offsetSet) /* {{{ */ {
 	Value& val = (*document)[key->val]; 
 	
 	if (IS_STRING == Z_TYPE_P(value)) {
-		val.SetString(StringRef(Z_STRVAL_P(value), Z_STRLEN_P(value)));
+		//ZVAL_MAKE_REF(value);
+		//Z_ADDREF_P(value);
+		val.SetString(Z_STRVAL_P(value), Z_STRLEN_P(value));
 	} else if (IS_LONG == Z_TYPE_P(value)) {
 		val.SetInt64(Z_LVAL_P(value));
 	} else if (IS_NULL == Z_TYPE_P(value)) {
