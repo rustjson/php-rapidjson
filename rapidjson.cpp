@@ -194,7 +194,7 @@ PHP_METHOD(rapidjson, offsetSet) /* {{{ */ {
 	if (IS_STRING == Z_TYPE_P(value)) {
 		//ZVAL_MAKE_REF(value);
 		//Z_ADDREF_P(value);
-		val.SetString(Z_STRVAL_P(value), Z_STRLEN_P(value));
+		val.SetString(StringRef(Z_STRVAL_P(value), Z_STRLEN_P(value)));
 	} else if (IS_LONG == Z_TYPE_P(value)) {
 		val.SetInt64(Z_LVAL_P(value));
 	} else if (IS_NULL == Z_TYPE_P(value)) {
@@ -222,7 +222,7 @@ PHP_METHOD(rapidjson, offsetGet) /* {{{ */ {
 		RETURN_NULL();
 		return;	
 	}
-	const Value& val = (*document)[key->val]; 
+	Value& val = (*document)[key->val]; 
 	if (val.IsString()) {
 		zend_string *ret = zend_string_init((val).GetString(), strlen((val).GetString()), 0);
 		RETURN_STR(ret);
@@ -237,9 +237,20 @@ PHP_METHOD(rapidjson, offsetGet) /* {{{ */ {
 		RETURN_BOOL(val.GetBool());	
 	}
 	if (val.IsObject()) {
-		zval zdoc;
-		//zdoc.value.ptr = val;
-		//RETURN_ZVAL(
+		zval propObj = {{0}}; //create a new Rapidjson object
+		zval realObj = {{0}}; //Use to pass pointer to child object
+
+		object_init_ex(&propObj, rapidjson_ce);
+	
+		//ZVAL_PTR(&zdoc, &val);
+		//Z_PTR_P(z) = &val;
+		
+		realObj.value.ptr = &val;
+		Z_TYPE_INFO_P(&realObj) = IS_PTR;
+
+		zend_update_property(rapidjson_ce, self, 	ZSTR_VAL(key), ZSTR_LEN(key), &propObj);
+		zend_update_property(rapidjson_ce, &propObj, ZEND_STRL("obj"), &realObj);
+		RETURN_ZVAL(&propObj, 1, 0);
 	}
 }
 /* }}} */

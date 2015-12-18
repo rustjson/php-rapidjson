@@ -44,11 +44,25 @@ new PHPRapidjson();
 
 
 
-$json = '{"boy": true, "name":"hello", "city": "beijing", "int":0, "arr":[1,3], "obj":{"ab":"cd"}}';
+$json = '{"boy": true, "name":"hello", "city": "beijing", "int":0, "arr":[1,3], "objjson":{"ab":"cd"}}';
 
 $r = new Rapidjson();
 $r->parse($json);
-$r["name"] = "OK";
+echo "------------obj-------------";
+var_dump($r['objjson']);
+var_dump($r);
+echo "--------------obj.ab-----------";
+var_dump($r['objjson']['ab']);
+echo "-------------------------";
+exit();
+
+
+$name = "OK";
+$r["name"] = $name;
+unset($name);
+$name = "NO";
+var_dump($r['name']);
+$r["name"] = $name;
 var_dump($r['name']);
 var_dump($r['city']);
 var_dump($r['age']);
