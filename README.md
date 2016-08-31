@@ -11,10 +11,8 @@ PHP Extension of rapidjson (not finished yet)
 # Install
 
 ```sh
-git clone https://github.com/RustJason/php-rapidjson
+git clone --recursive https://github.com/RustJason/php-rapidjson
 cd php-rapidjson
-
-git submodule init
 
 phpize
 
