@@ -30,6 +30,7 @@ extern "C" {
 #include "php_rapidjson.h"
 #include "zend_interfaces.h" //for arrayaccess
 #include "Zend/zend_types.h"
+#include "zend_exceptions.h"
 }
 
 #include "rapidjson/document.h"     // rapidjson's DOM-style API
@@ -102,8 +103,7 @@ int inline rapidjson_parse(zval *self, char *json) /* {{{ */ {
 
 
 	if (document->Parse(json).HasParseError()) {
-		//TODO Fatal error here;	
-		printf("Parse Error\n");
+		zend_throw_exception(NULL, "JSON Parse Error", 0 TSRMLS_CC);
 		return -1;
 	}
 
